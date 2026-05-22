@@ -1,0 +1,29 @@
+streamlit>=1.32.0
+groq>=0.11.0
+google-generativeai>=0.8.0
+python-dotenv>=1.0.0
+radon>=6.0.1
+bandit>=1.7.9
+pylint>=3.2.0
+black>=24.0.0
+requests>=2.31.0
+markdown>=3.5.0
+Pillow>=10.2.0
+# Multimodal support
+easyocr>=1.7.0
+opencv-python>=4.8.0
+PyMuPDF>=1.23.0
+pdfplumber>=0.10.0
+python-docx>=1.1.0
+openai-whisper>=20231117
+SpeechRecognition>=3.10.0
+moviepy>=1.0.3
+ffmpeg-python>=0.2.0
+numpy>=1.24.0
+# Voice interview (TTS + microphone STT)
+gtts>=2.5.0
+pygame>=2.5.0
+pyttsx3>=2.90
+pydub>=0.25.1
+sounddevice>=0.4.6
+scipy>=1.11.0

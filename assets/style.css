@@ -1,0 +1,113 @@
+/* CodeMentor AI – Professional SaaS-style UI */
+
+.main .block-container {
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+    max-width: 1100px;
+}
+
+.gradient-header {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+
+.gradient-header h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+.gradient-header .subtitle {
+    -webkit-text-fill-color: var(--text-primary, #94a3b8);
+    color: var(--text-primary, #94a3b8);
+    font-size: 1.05rem;
+    margin-top: 0.25rem;
+}
+
+.hero-card {
+    background: var(--bg-card, #1e293b);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+}
+
+.feature-card-preview {
+    background: var(--bg-card, #1e293b);
+    border-radius: 12px 12px 0 0;
+    padding: 1rem 1rem 0.5rem;
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-bottom: none;
+    margin-top: 0.5rem;
+}
+
+/* Home page "Open …" buttons — card-style */
+div[data-testid="column"] .stButton > button {
+    border-radius: 0 0 12px 12px;
+    font-weight: 600;
+    min-height: 2.75rem;
+}
+
+div[data-testid="column"] .stButton {
+    margin-top: -0.25rem;
+}
+
+.feature-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.sidebar-brand {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #6366f1;
+}
+
+.stTextArea textarea,
+.stCodeBlock {
+    font-family: "Consolas", "Monaco", "Courier New", monospace !important;
+}
+
+[data-testid="stSidebar"] {
+    border-right: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.privacy-footer {
+    font-size: 0.8rem;
+    opacity: 0.85;
+    margin-top: 2rem;
+}
+
+.badge-new {
+    background: linear-gradient(90deg, #6366f1, #ec4899);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+/* Multimodal upload hint */
+[data-testid="stFileUploader"] {
+    border: 1px dashed rgba(99, 102, 241, 0.45);
+    border-radius: 12px;
+    padding: 0.5rem;
+}
+
+.listening-badge {
+    background: rgba(99, 102, 241, 0.2);
+    border: 1px solid rgba(99, 102, 241, 0.5);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin: 0.5rem 0;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}

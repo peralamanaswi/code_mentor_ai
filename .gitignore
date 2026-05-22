@@ -1,0 +1,62 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.env.local
+.envrc
+credentials.json
+*credentials*.json
+secrets.toml
+**/secrets.toml
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Reports and temp
+reports/analysis_reports/*.txt
+reports/analysis_reports/*.md
+!reports/analysis_reports/.gitkeep
+
+# Bandit / pylint temp
+.bandit
+.pylint.d/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

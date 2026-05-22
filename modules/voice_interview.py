@@ -258,5 +258,22 @@ def _run_evaluation(language: str, difficulty: str, question: str, transcript: s
     score = parse_score(report)
     if score:
         st.metric("Your Score", score)
+    try:
+        from modules.mongodb import insert_interview_record
+        from modules.mentor_engine import persist_mentor_session
+
+        insert_interview_record(
+            {
+                "language": language,
+                "difficulty": difficulty,
+                "question": question,
+                "answer": transcript,
+                "score": score,
+                "mode": "voice",
+            }
+        )
+        persist_mentor_session(question, report, "interview_voice", language)
+    except Exception:
+        pass
     show_toast("Voice interview evaluation complete!")
     render_card("📝 Voice Interview Feedback", report)

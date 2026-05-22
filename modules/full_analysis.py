@@ -39,6 +39,9 @@ def build_combined_report(
     security_static = run_bandit_scan(code)
     complexity_static = static_complexity_report(code, filename)
 
+    from utils.helper import detect_language_from_code
+
+    lang = detect_language_from_code(code, filename)
     if is_ai_available():
         prompt = full_analysis_prompt(
             code,
@@ -49,9 +52,21 @@ def build_combined_report(
             source_type=source_type,
             extra_context=extra_context,
         )
-        ai_report = generate_ai_response(prompt)
+        from modules.mentor_engine import generate_mentor_response, persist_full_session
+
+        ai_report, _ = generate_mentor_response(
+            prompt,
+            code=code,
+            error_msg=error_msg,
+            feature="full",
+            language=lang,
+            filename=filename,
+            user_question=error_msg or "Full code analysis",
+        )
         if ai_report:
-            return _ensure_report_header(ai_report)
+            report = _ensure_report_header(ai_report)
+            persist_full_session(code, error_msg, report, lang, filename)
+            return report
 
     # Hybrid: stitch module outputs when AI fails or keys missing
     bug_section = analyze_bug(code, error_msg, filename)

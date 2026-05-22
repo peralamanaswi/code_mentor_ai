@@ -72,11 +72,30 @@ def analyze_bug(code: str, error_msg: str, filename: str = "") -> str:
 
     if is_ai_available():
         prompt = bug_explainer_prompt(code, error_msg, lang)
-        ai = generate_ai_response(prompt)
+        # Mentor pipeline: Chroma retrieval → context injection → LLM → persist
+        from modules.mentor_engine import generate_mentor_response, persist_bug_session
+
+        ai, _ = generate_mentor_response(
+            prompt,
+            code=code,
+            error_msg=error_msg,
+            feature="bug",
+            language=lang,
+            filename=filename,
+            user_question=error_msg or "Explain this bug",
+        )
         if ai:
+            persist_bug_session(code, error_msg, ai, lang, filename)
             return ai
 
-    return _static_bug_report(code, error_msg, static)
+    report = _static_bug_report(code, error_msg, static)
+    try:
+        from modules.mentor_engine import persist_bug_session
+
+        persist_bug_session(code, error_msg, report, lang, filename)
+    except Exception:
+        pass
+    return report
 
 
 def _static_bug_report(code: str, error_msg: str, static: str) -> str:
@@ -153,6 +172,22 @@ def render_bug_explainer_page() -> None:
             report = analyze_bug(merged, merged_error, fname)
         show_toast("Bug analysis ready!")
         render_card("🔧 Bug Analysis Report", report)
+
+        # Semantic memory: show similar past debugging sessions
+        try:
+            from modules.chromadb_manager import is_chromadb_available, retrieve_similar_bugs
+
+            if is_chromadb_available() and merged_error:
+                similar = retrieve_similar_bugs(merged_error, language="auto", n=3)
+                if similar:
+                    with st.expander("🧠 Similar bugs from coding memory", expanded=False):
+                        for i, hit in enumerate(similar, 1):
+                            sim = hit.get("similarity", "N/A")
+                            st.markdown(f"**Match {i}** (similarity {sim})")
+                            st.caption(hit.get("metadata", {}))
+                            st.markdown(hit.get("document", "")[:800])
+        except Exception:
+            pass
 
         st.download_button(
             "📥 Download Report",

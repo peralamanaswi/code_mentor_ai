@@ -45,6 +45,10 @@ env/
 # Streamlit
 .streamlit/secrets.toml
 
+# ChromaDB local vector store (runtime data)
+database/vector_store/*
+!database/vector_store/.gitkeep
+
 # Reports and temp
 reports/analysis_reports/*.txt
 reports/analysis_reports/*.md

@@ -97,10 +97,25 @@ def analyze_security(code: str) -> Tuple[str, str]:
     static = run_bandit_scan(code)
     if is_ai_available():
         prompt = security_ai_prompt(code, static)
-        ai = generate_ai_response(prompt)
+        from modules.mentor_engine import generate_mentor_response, persist_security_session
+
+        ai, _ = generate_mentor_response(
+            prompt,
+            code=code,
+            feature="security",
+            language="python",
+            user_question="Security scan",
+        )
         if ai:
+            persist_security_session(code, ai)
             return static, ai
     fallback = static_only_notice() + "\n\n" + _fallback_security_markdown(static)
+    try:
+        from modules.mentor_engine import persist_security_session
+
+        persist_security_session(code, fallback)
+    except Exception:
+        pass
     return static, fallback
 
 

@@ -183,12 +183,29 @@ def analyze_complexity(code: str, filename: str = "") -> Tuple[str, str]:
         Tuple of (static_report, full_display_markdown).
     """
     static = static_complexity_report(code, filename)
+    lang = detect_language_from_code(code, filename)
     ai_part = ""
     if is_ai_available():
         prompt = complexity_ai_prompt(code, static)
-        ai_part = generate_ai_response(prompt) or ""
+        from modules.mentor_engine import generate_mentor_response, persist_complexity_session
+
+        ai_part, _ = generate_mentor_response(
+            prompt,
+            code=code,
+            feature="complexity",
+            language=lang,
+            filename=filename,
+            user_question="Analyze code complexity",
+        )
+        ai_part = ai_part or ""
     if not ai_part:
         ai_part = static_only_notice() + "\n\n" + _fallback_complexity_markdown(static)
+    try:
+        from modules.mentor_engine import persist_complexity_session
+
+        persist_complexity_session(code, ai_part, static, lang, filename)
+    except Exception:
+        pass
     return static, ai_part
 
 

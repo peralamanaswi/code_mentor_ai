@@ -205,7 +205,16 @@ def _render_text_interview(language: str, difficulty: str) -> None:
                 "timestamp": time.time(),
             }
             try:
-                save_interview_record(record)
+                from modules.mongodb import insert_interview_record
+                from modules.mentor_engine import persist_mentor_session
+
+                insert_interview_record(record)
+                persist_mentor_session(
+                    user_question=st.session_state.interview_question,
+                    ai_response=report,
+                    module="interview",
+                    language=language,
+                )
             except Exception as e:
                 st.warning(f"⚠️ Failed to store interview data: {e}")
         show_toast("Evaluation complete!")

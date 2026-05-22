@@ -22,7 +22,9 @@ from modules.bug_explainer import render_bug_explainer_page
 from modules.complexity_analyzer import render_complexity_page
 from modules.full_analysis import render_full_analysis_page
 from modules.interview_assistant import render_interview_page
+from modules.history_page import render_history_page
 from modules.security_checker import render_security_page
+from modules.mentor_engine import backend_status
 from utils.helper import load_custom_css, privacy_disclaimer, render_gradient_header
 
 load_dotenv()
@@ -42,6 +44,7 @@ PAGES = {
     "Complexity Analyzer": "complexity",
     "Security Checker": "security",
     "Analyze Everything": "full",
+    "History & Memory": "history",
     "About Project": "about",
 }
 
@@ -52,6 +55,7 @@ HOME_FEATURES = [
     ("📊", "Complexity Analyzer", "complexity", "Radon + Pylint insights"),
     ("🔐", "Security Checker", "security", "Bandit-powered safety scan"),
     ("⚡", "Analyze Everything", "full", "One combined professional report"),
+    ("📜", "History & Memory", "history", "MongoDB sessions & similar bugs"),
     ("🎓", "About Project", "about", "Learn how CodeMentor AI works"),
     ("📎", "Multimodal AI", "about", "Images, PDF, audio & video support"),
 ]
@@ -90,15 +94,34 @@ def render_sidebar() -> str:
 
         st.divider()
 
+        # Keep radio in sync with current page so History is reachable from any screen
+        page_labels = list(PAGES.keys())
+        page_values = list(PAGES.values())
+        current = st.session_state.get("current_page", "home")
+        try:
+            radio_index = page_values.index(current)
+        except ValueError:
+            radio_index = 0
+
         selection = st.radio(
             "Navigate",
-            list(PAGES.keys()),
+            page_labels,
+            index=radio_index,
             key="nav_radio",
         )
         page_key = PAGES[selection]
 
         st.divider()
-        # Custom API and MongoDB inputs removed
+        bs = backend_status()
+        if bs["mongodb"]:
+            st.caption("🟢 MongoDB connected")
+        else:
+            st.caption("⚪ MongoDB — set MONGODB_URI in .env")
+        if bs["chromadb"]:
+            st.caption("🟢 ChromaDB memory active")
+        else:
+            st.caption("⚪ ChromaDB — install chromadb + sentence-transformers")
+
         st.divider()
 
     return page_key
@@ -304,13 +327,9 @@ def main() -> None:
     init_session_state()
     load_custom_css(st.session_state.theme)
 
-    # Determine which page to display based on session state
-    page_key = st.session_state.get("current_page", "home")
-
-    # If on home, render sidebar to allow user navigation and sync current_page
-    if page_key == "home":
-        page_key = render_sidebar()
-        st.session_state.current_page = page_key
+    # Sidebar on every page — otherwise History and other modules are unreachable
+    page_key = render_sidebar()
+    st.session_state.current_page = page_key
 
     # Render the appropriate page
     if page_key == "home":
@@ -330,10 +349,18 @@ def main() -> None:
     elif page_key == "full":
         render_gradient_header("Analyze Everything", "Complete code health report")
         render_full_analysis_page()
+    elif page_key == "history":
+        render_gradient_header("History & Memory", "Past sessions and semantic bug search")
+        render_history_page()
     elif page_key == "about":
         render_about()
 
-    st.markdown('<p class="privacy-footer">🔒 Uploaded code is not stored permanently.</p>', unsafe_allow_html=True)
+    bs = backend_status()
+    if bs["mongodb"]:
+        footer = "🔒 Code is stored only when MongoDB is configured — used for history & learning memory."
+    else:
+        footer = "🔒 Uploaded code is not stored permanently (enable MONGODB_URI for optional history)."
+    st.markdown(f'<p class="privacy-footer">{footer}</p>', unsafe_allow_html=True)
 
 
 if __name__ == "__main__":

@@ -280,6 +280,35 @@ Brief one-line verdict.
 """
 
 
+def context_retrieval_prompt(retrieved_hits: list) -> str:
+    """Inject semantically similar past sessions into the LLM prompt.
+
+    Gen AI technique: Context-Aware Reasoning — reuse prior bug fixes,
+    code patterns, and mentor explanations from ChromaDB cosine search.
+    """
+    if not retrieved_hits:
+        return ""
+
+    blocks = [
+        "You are CodeMentor AI. Use the following RELEVANT PAST SESSIONS "
+        "as reference (similar bugs, code, or mentor answers). "
+        "Do not copy blindly — adapt to the user's current input."
+    ]
+    for i, hit in enumerate(retrieved_hits[:5], start=1):
+        doc = hit.get("document", "")
+        meta = hit.get("metadata", {})
+        sim = hit.get("similarity")
+        topic = meta.get("topic", "unknown")
+        lang = meta.get("language", "auto")
+        err = meta.get("error_type", "")
+        sim_note = f" (similarity: {sim})" if sim is not None else ""
+        blocks.append(
+            f"\n### Memory {i} — topic: {topic}, language: {lang}, "
+            f"error: {err}{sim_note}\n{doc[:1200]}"
+        )
+    return "\n".join(blocks)
+
+
 def static_only_notice() -> str:
     """Message when AI APIs are unavailable."""
     return (

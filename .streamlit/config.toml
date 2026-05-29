@@ -7,7 +7,6 @@ textColor = "#f8fafc"
 font = "sans serif"
 
 [server]
-[server]
 headless = true
 enableCORS = false
 enableXsrfProtection = true
@@ -18,4 +17,4 @@ maxUploadSize = 10
 gatherUsageStats = false
 
 [client]
-showErrorDetails = false
+showErrorDetails = true
